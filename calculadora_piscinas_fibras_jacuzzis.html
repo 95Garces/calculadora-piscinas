@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#073b55">
+<title>Calculadora de Piscinas | Fibras & Jacuzzis</title>
+<style>
+:root{--navy:#073b55;--blue:#0b6680;--aqua:#dff5f7;--gold:#d6ad55;--ink:#18313d;--muted:#617783;--bg:#f3f7f9;--line:#dce7eb;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;padding:24px 18px 28px;border-bottom:4px solid var(--gold)}
+header .brand{font-size:12px;letter-spacing:2px;font-weight:800;color:#d9f5f7}
+h1{font-size:25px;line-height:1.15;margin:9px 0 7px}
+header p{margin:0;color:#e0f4f7;font-size:14px}
+main{max-width:760px;margin:0 auto;padding:16px 13px 36px}
+.card{background:white;border:1px solid var(--line);border-radius:16px;padding:17px;margin-bottom:14px;box-shadow:0 4px 18px #073b550a}
+h2{font-size:17px;margin:0 0 14px;color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+label{font-size:13px;font-weight:700;color:#36515e}
+input,select{font:inherit;font-size:16px;width:100%;min-height:46px;border:1px solid #cbd9df;border-radius:10px;padding:10px 11px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:3px solid #b9e7ed;border-color:var(--blue)}
+.hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4}
+.actions{display:flex;gap:10px;margin:14px 0}
+button{font:inherit;font-weight:750;border:0;border-radius:11px;padding:13px 15px;cursor:pointer}
+.primary{background:var(--navy);color:white;flex:1}
+.secondary{background:#e8f1f4;color:var(--navy)}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.metric{background:#f2f8fa;border-radius:12px;padding:13px}
+.metric span{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.metric strong{font-size:21px;color:var(--navy);overflow-wrap:anywhere}
+.metric.total{background:var(--navy);grid-column:1/-1}
+.metric.total span,.metric.total strong{color:white}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:10px 2px;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{text-align:right;font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.note{background:#fff8e8;border:1px solid #f1dfb4;padding:12px;border-radius:10px;font-size:12px;line-height:1.45;color:#604d20}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:8px 18px 24px}
+@media(max-width:420px){h1{font-size:23px}.card{padding:14px}.grid{gap:10px}.metric strong{font-size:19px}.results{gap:8px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">FIBRAS & JACUZZIS</div>
+  <h1>Calculadora de piscinas</h1>
+  <p>Área interior, material y estimado de cotización</p>
+</header>
+<main>
+  <section class="card">
+    <h2>1. Medidas de la piscina</h2>
+    <div class="grid">
+      <div class="field"><label for="largo">Largo (m)</label><input id="largo" type="number" min="0.1" step="0.01" value="6"></div>
+      <div class="field"><label for="ancho">Ancho (m)</label><input id="ancho" type="number" min="0.1" step="0.01" value="4"></div>
+      <div class="field"><label for="prof">Profundidad (m)</label><input id="prof" type="number" min="0.1" step="0.01" value="1.5"></div>
+      <div class="field"><label for="extra">Material adicional (%)</label><select id="extra"><option value="0">0 % — área exacta</option><option value="10" selected>10 %</option><option value="15">15 %</option><option value="20">20 %</option></select></div>
+    </div>
+    <p class="hint">Calcula el piso y las cuatro paredes de una piscina rectangular. No contempla escalones, bancos, curvas ni formas especiales.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Estimado de costos (COP)</h2>
+    <div class="grid">
+      <div class="field"><label for="material">Material</label><select id="material"><option value="570000">Fibra de vidrio — $570.000/m²</option><option value="270000">Geomembrana — $270.000/m²</option><option value="custom">Otro valor por m²</option></select></div>
+      <div class="field"><label for="tarifa">Tarifa por m² ($)</label><input id="tarifa" type="number" min="0" step="1000" value="570000"></div>
+      <div class="field"><label for="equipo">Equipos e instalación ($)</label><input id="equipo" type="number" min="0" step="100000" value="8000000"></div>
+    </div>
+    <p class="hint">Puedes editar la tarifa y el valor de equipos e instalación según cada proyecto.</p>
+    <div class="actions">
+      <button class="primary" id="calcular">Calcular</button>
+      <button class="secondary" id="limpiar" type="button">Restablecer</button>
+    </div>
+  </section>
+
+  <section class="card" aria-live="polite">
+    <h2>Resultado</h2>
+    <div class="results">
+      <div class="metric"><span>Área del piso</span><strong id="rPiso">—</strong></div>
+      <div class="metric"><span>Área de paredes</span><strong id="rParedes">—</strong></div>
+      <div class="metric"><span>Área interior total</span><strong id="rArea">—</strong></div>
+      <div class="metric"><span>Área con adicional</span><strong id="rExtra">—</strong></div>
+      <div class="metric total"><span>Estimado total (material + equipos/instalación)</span><strong id="rTotal">—</strong></div>
+    </div>
+    <table style="margin-top:14px">
+      <tbody>
+        <tr><td>Valor del material</td><td id="rMaterial">$—</td></tr>
+        <tr><td>Equipos e instalación</td><td id="rEquipo">$—</td></tr>
+        <tr><td>Precio estimado por m² usado</td><td id="rTarifa">$—</td></tr>
+      </tbody>
+    </table>
+    <div class="actions">
+      <button class="primary" id="copiar" type="button">Copiar resumen</button>
+      <button class="secondary" id="whatsapp" type="button">Preparar WhatsApp</button>
+    </div>
+    <p class="hint" id="mensaje"></p>
+  </section>
+
+  <div class="note"><strong>Importante:</strong> este cálculo es una estimación para piscinas rectangulares. No incluye obra civil (excavación, placa/base en concreto ni adecuación del terreno), transporte u otros conceptos, salvo que los agregues al valor de equipos e instalación. Verifica cada alcance antes de enviar una cotización definitiva.</div>
+</main>
+<footer>Herramienta de apoyo comercial · Fibras & Jacuzzis</footer>
+<script>
+const $ = id => document.getElementById(id);
+const money = n => new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number.isFinite(n)?n:0);
+const num = id => Math.max(0, Number($(id).value)||0);
+function calculate(){
+  const l=num('largo'), a=num('ancho'), p=num('prof'), ex=num('extra')/100;
+  const areaPiso=l*a, paredes=2*l*p+2*a*p, area=areaPiso+paredes;
+  const areaExtra=area*(1+ex), tarifa=num('tarifa'), equipo=num('equipo');
+  const material=areaExtra*tarifa, total=material+equipo;
+  $('rPiso').textContent=areaPiso.toLocaleString('es-CO',{maximumFractionDigits:2})+' m²';
+  $('rParedes').textContent=paredes.toLocaleString('es-CO',{maximumFractionDigits:2})+' m²';
+  $('rArea').textContent=area.toLocaleString('es-CO',{maximumFractionDigits:2})+' m²';
+  $('rExtra').textContent=areaExtra.toLocaleString('es-CO',{maximumFractionDigits:2})+' m²';
+  $('rTotal').textContent=money(total);
+  $('rMaterial').textContent=money(material);
+  $('rEquipo').textContent=money(equipo);
+  $('rTarifa').textContent=money(tarifa)+'/m²';
+  $('mensaje').textContent=`Cálculo para ${l} × ${a} × ${p} m, con ${Math.round(ex*100)} % adicional.`;
+}
+$('material').addEventListener('change',()=>{
+  if($('material').value!=='custom') $('tarifa').value=$('material').value;
+});
+$('tarifa').addEventListener('input',()=>{
+  const v=$('tarifa').value;
+  $('material').value=(v==='570000'||v==='270000')?v:'custom';
+});
+$('calcular').addEventListener('click',calculate);
+['largo','ancho','prof','extra','tarifa','equipo'].forEach(id=>$(id).addEventListener('input',calculate));
+$('limpiar').addEventListener('click',()=>{
+  $('largo').value=6;$('ancho').value=4;$('prof').value=1.5;$('extra').value='10';$('material').value='570000';$('tarifa').value=570000;$('equipo').value=8000000;calculate();
+});
+function summary(){
+  return `Fibras & Jacuzzis - cálculo estimado\nPiscina: ${$('largo').value} × ${$('ancho').value} × ${$('prof').value} m\nÁrea interior: ${$('rArea').textContent}\nÁrea con adicional: ${$('rExtra').textContent}\nMaterial: ${$('rMaterial').textContent}\nEquipos e instalación: ${$('rEquipo').textContent}\nTotal estimado: ${$('rTotal').textContent}\nNo incluye obra civil, transporte u otros conceptos no especificados.`;
+}
+$('copiar').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText(summary());$('mensaje').textContent='Resumen copiado. Puedes pegarlo en tu chat o cotización.';}
+  catch(e){const t=document.createElement('textarea');t.value=summary();document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();$('mensaje').textContent='Resumen copiado. Puedes pegarlo en tu chat o cotización.';}
+});
+$('whatsapp').addEventListener('click',()=>{
+  const text=encodeURIComponent(summary());
+  window.open('https://wa.me/?text='+text,'_blank','noopener');
+});
+calculate();
+</script>
+</body>
+</html>
